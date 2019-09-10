@@ -20,7 +20,6 @@ class Teledyne(SerialSensor):
                 'Unit' : 'uiu',
                 'SetpointValue' : 'spv'
                 }
-        self.device_address = 'a'  # changeable, but default is a
         self.basecommand = f'{self.device_address}' + '{cmd}'
         self.setcommand = self.basecommand + ' {params}'
         self.getcommand = self.basecommand + '?'

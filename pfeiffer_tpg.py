@@ -1,8 +1,8 @@
-from Doberman import SerialSensor, utils
+from Doberman import LANSensor, utils
 import re  # EVERYBODY STAND BACK xkcd.com/208
 
 
-class pfeiffer_tpg(SerialSensor):
+class pfeiffer_tpg(LANSensor):
     def SetParameters(self):
         self._msg_begin = ''
         self._msg_end = '\r\n\x05'
@@ -22,6 +22,6 @@ class pfeiffer_tpg(SerialSensor):
         ret = self.SendRecv(self.commands['identify'], dev)
         if ret['retcode'] or ret['data'] is None:
             return False
-        if self.serialID in ret['data'].decode():
+        if self.serialID in ret['data'].decode().split(','):
             return True
         return False
