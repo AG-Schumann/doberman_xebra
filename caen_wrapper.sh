@@ -7,7 +7,8 @@ fi
 
 if [[ $1 == "install" ]]; then
     echo "Compiling.."
-    if g++ -o caen_sy5527 -O2 -lcaenhvwrapper -lpthread -ldl caen_sy5527.cpp; then
+    g++ -g -o caen_sy5527 -O2 -lcaenhvwrapper -lpthread -ldl caen_sy5527.cpp
+    if [[ $? -ne 0 ]]; then
         echo "Do you have the appropriate libraries?"
     else
         echo "Success"
