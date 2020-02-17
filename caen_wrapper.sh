@@ -14,5 +14,5 @@ if [[ $1 == "install" ]]; then
         echo "Success"
     fi
 elif [[ $1 == "run" ]]; then
-    ./caen_sy5527 5001 192.168.131.19
+    ./caen_sy5527 5000 192.168.131.12
 fi

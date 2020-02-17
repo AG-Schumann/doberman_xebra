@@ -23,8 +23,6 @@ class smartec_uti(SerialSensor):
                 }
         self._msg_start = ''
         self._msg_end = '\r\n'
-        self.reading_commands = dict(zip(self.readings,
-                                        repeat(self.commands['measure'])))
 
     def Setup(self):
         self.SendRecv(self.commands['greet'])
@@ -79,6 +77,7 @@ class smartec_uti(SerialSensor):
         self.logger.debug('UTI measured %s' % values)
         if div: # evals to (value[cde] - valuea)/(valueb - valuea)
             resp = [(v-c_off)/div*self.c_ref for v in values[2:]]
+            self.logger.debug(f'Calculated response: {resp}')
             if len(resp) > 1:
                 return resp
             return resp[0]

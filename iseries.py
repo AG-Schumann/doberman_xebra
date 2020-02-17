@@ -21,7 +21,6 @@ class iseries(SerialSensor):
         self.reading_pattern = re.compile(('%s(?P<value>%s)' %
                                             (self.commands['getDisplayedValue'],
                                             utils.number_regex)).encode())
-        self.reading_commands = {self.readings[0]:self.commands['getDisplayedValue']}
         self.id_pattern = re.compile(('%s%s' % (self.commands['getAddress'],
                                                 self.serialID)).encode())
 

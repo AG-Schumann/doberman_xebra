@@ -25,14 +25,6 @@ class cryocon_22c(LANSensor):
                 'setSP' : 'loop {ch}:setpt {value}',
                 }
         self.reading_pattern = re.compile(('(?P<value>%s)' % utils.number_regex).encode())
-        self.reading_commands = {
-                'cf_temp_top' : self.commands['getTempA'],
-                'cf_temp_bot' : self.commands['getTempB'],
-                'setpt1' : self.commands['getSP1'],
-                'setpt2' : self.commands['getSP2'],
-                'heater1' : self.commands['getLp1Pwr'],
-                'heater2' : self.commands['getLp2Pwr']
-                }
         self.command_patterns = [
                 (re.compile(r'setpoint (?P<ch>1|2) (?P<value>%s)' % utils.number_regex),
                     lambda x : self.commands['setSP'].format(**x.groupdict())),

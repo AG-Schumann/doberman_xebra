@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 
     std::cout << "Starting\n";
 
-    int server_fd, client_fd, portnum, handle;
+    int server_fd, client_fd, portnum, handle, ch_nr;
 
     struct sockaddr_in server_addr, client_addr;
     int opt = 1, i, bytes_read;
@@ -86,9 +86,9 @@ int main(int argc, char** argv) {
 
     std::regex set_re("set ch([1-9]?[0-9]) sl([0-3]) "
             "(vset|rup|rdn|tripi|tript|pw|pon|pdn) "
-            "([+\\-]?[1-9]*[0-9](?:\\.[0-9]+)?(?:[eE][+\\-]?[1-9]*[0-9])?)",
-            std::regex_constants::ECMAScript | std::regex_constants::optimize);
-    std::regex get_re("get sl([0-3]) "
+            "([+-]?[1-9][0-9]*(?:\\.[0-9]+)?(?:[eE][+\\-]?[1-9]*[0-9])?)",
+	    std::regex_constants::ECMAScript | std::regex_constants::optimize);
+    std::regex get_re("get ch([1-9]?[0-9]) sl([0-3]) "
             "(vmon|imon|vset|stat|rup|rdn|tripi|tript|pw|pon|pdn)",
             std::regex_constants::extended | std::regex_constants::optimize);
 
@@ -122,7 +122,7 @@ int main(int argc, char** argv) {
 
         std::smatch match;
         string payload;
-        //std::cout << "Got " << msg << '\n';
+        std::cout << "Got " << msg << '\n';
         if (std::regex_match(msg, match, set_re)) {
             ch[0] = stoi((string)match.str(1));
             sl = stoi((string)match.str(2));
@@ -166,61 +166,61 @@ int main(int argc, char** argv) {
             }
         } else if (std::regex_match(msg, match, get_re)) {
             payload = "OK;";
-            std::iota(ch.begin(), ch.end(), 0);
-            sl = stoi((string)match.str(1));
-            task = match.str(2);
-            //std::cout << "Getting " << task << " from " << sl << '/' << ch << '\n';
+	    ch[0] = stoi((string)match.str(1));
+            sl = stoi((string)match.str(2));
+            task = match.str(3);
             if (task == "vset") {
-                err = CAENHV_GetChParam(handle, sl, "V0Set", ch.size(), ch.data(),
+                err = CAENHV_GetChParam(handle, sl, "V0Set", 1, ch.data(),
                         float_val.data());
-                payload += AddCommas(float_val);
+                payload += std::to_string(float_val[0]);
             } else if (task == "vmon") {
-                err = CAENHV_GetChParam(handle, sl, "VMon", ch.size(), ch.data(),
+		err = CAENHV_GetChParam(handle, sl, "VMon", 1, ch.data(),
                         float_val.data());
-                payload += AddCommas(float_val);
-            } else if (task == "imon") {
-                err = CAENHV_GetChParam(handle, sl, "IMon", ch.size(), ch.data(),
+		std::cout << typeid(err).name() << "  " << err << '\n';
+                payload += std::to_string(float_val[0]);
+	    } else if (task == "imon") {
+                err = CAENHV_GetChParam(handle, sl, "IMon", 1, ch.data(),
                         float_val.data());
-                payload += AddCommas(float_val);
-            } else if (task == "stat") {
-                err = CAENHV_GetChParam(handle, sl, "Status", ch.size(), ch.data(),
+           	payload += std::to_string(float_val[0]); 
+	    } else if (task == "stat") {
+                err = CAENHV_GetChParam(handle, sl, "Status", 1, ch.data(),
                         int_val.data());
-                payload += AddCommas(int_val);
+		payload += std::to_string(int_val[0]);
             } else if (task == "rup") {
-                err = CAENHV_GetChParam(handle, sl, "RUp", ch.size(), ch.data(),
+                err = CAENHV_GetChParam(handle, sl, "RUp", 1, ch.data(),
                         float_val.data());
-                payload += AddCommas(float_val);
-            } else if (task == "rdn") {
-                err = CAENHV_GetChParam(handle, sl, "RDWn", ch.size(), ch.data(),
+            	payload += std::to_string(float_val[0]);
+	    } else if (task == "rdn") {
+                err = CAENHV_GetChParam(handle, sl, "RDWn", 1, ch.data(),
                         float_val.data());
-                payload += AddCommas(float_val);
-            } else if (task == "tripi") {
-                err = CAENHV_GetChParam(handle, sl, "I0Set", ch.size(), ch.data(),
+            	payload += std::to_string(float_val[0]);
+	    } else if (task == "tripi") {
+                err = CAENHV_GetChParam(handle, sl, "I0Set", 1, ch.data(),
                         float_val.data());
-                payload += AddCommas(float_val);
-            } else if (task == "tript") {
-                err = CAENHV_GetChParam(handle, sl, "Trip", ch.size(), ch.data(),
+            	payload += std::to_string(float_val[0]);
+	    } else if (task == "tript") {
+                err = CAENHV_GetChParam(handle, sl, "Trip", 1, ch.data(),
                         float_val.data());
-                payload += AddCommas(float_val);
-            } else if (task == "pw") {
-                err = CAENHV_GetChParam(handle, sl, "Pw", ch.size(), ch.data(),
+            	payload += std::to_string(float_val[0]);
+	    } else if (task == "pw") {
+                err = CAENHV_GetChParam(handle, sl, "Pw", 1, ch.data(),
                         int_val.data());
-                payload += AddCommas(int_val);
-            } else if (task == "pon") {
-                err = CAENHV_GetChParam(handle, sl, "POn", ch.size(), ch.data(),
+            	payload += std::to_string(int_val[0]);
+	    } else if (task == "pon") {
+                err = CAENHV_GetChParam(handle, sl, "POn", 1, ch.data(),
                         int_val.data());
-                payload += AddCommas(int_val);
-            } else if (task == "pdn") {
-                err = CAENHV_GetChParam(handle, sl, "PDwn", ch.size(), ch.data(),
+            	payload += std::to_string(int_val[0]);
+	    } else if (task == "pdn") {
+                err = CAENHV_GetChParam(handle, sl, "PDwn", 1, ch.data(),
                         int_val.data());
-                payload += AddCommas(int_val);
-            } else {
+            	payload += std::to_string(int_val[0]);
+	    } else {
                 payload = "ERR;01";
             }
         } else {
             payload = "ERR;00";
         }
-        //std::cout << "Payload: " << payload << '\n';
+        std::cout << "Payload: " << payload << '\n';
         if (err != 0) payload = "ERR;c" + std::to_string(err);
         payload += "\r\n";
         i = send(client_fd, payload.data(), payload.size(), MSG_NOSIGNAL);
