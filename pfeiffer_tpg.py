@@ -3,7 +3,7 @@ import re  # EVERYBODY STAND BACK xkcd.com/208
 
 
 class pfeiffer_tpg(LANSensor):
-    def SetParameters(self):
+    def set_parameters(self):
         self._msg_begin = ''
         self._msg_end = '\r\n\x05'
         self.commands = {
@@ -14,11 +14,11 @@ class pfeiffer_tpg(LANSensor):
         self.reading_pattern = re.compile(('(?P<status>[0-9]),(?P<value>%s)' %
                                                     utils.number_regex).encode())
 
-    def Setup(self):
+    def setup(self):
         self.SendRecv(self.commands['identify'])
         # stops the continuous flow of data
 
-    def isThisMe(self, dev):
+    def is_this_me(self, dev):
         ret = self.SendRecv(self.commands['identify'], dev)
         if ret['retcode'] or ret['data'] is None:
             return False

@@ -7,7 +7,7 @@ class iseries(SerialSensor):
     iseries sensor
     """
 
-    def SetParameters(self):
+    def set_parameters(self):
         self._msg_start = '*'
         self._msg_end = '\r\n'
         self.commands = {
@@ -24,7 +24,7 @@ class iseries(SerialSensor):
         self.id_pattern = re.compile(('%s%s' % (self.commands['getAddress'],
                                                 self.serialID)).encode())
 
-    def isThisMe(self, dev):
+    def is_this_me(self, dev):
         info = self.SendRecv(self.commands['getAddress'], dev)
         try:
             if info['retcode']:

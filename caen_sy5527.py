@@ -6,7 +6,7 @@ class caen_sy5527(Doberman.LANSensor):
     """
     Driver for the CAEN high-voltage crate
     """
-    def SetParameters(self):
+    def set_parameters(self):
         self.channel_status = [
                 'on',
                 'ramp_up',
@@ -27,6 +27,6 @@ class caen_sy5527(Doberman.LANSensor):
         self.reading_pattern = re.compile(('OK;(?P<value>(?:%s,)*%s)\r\n' % 
             (Doberman.utils.number_regex, Doberman.utils.number_regex)).encode())
 
-    def ProcessOneReading(self, name, data):
+    def process_one_reading(self, name, data):
         m = self.reading_pattern.search(data)
         return list(map(float, m.group('value').decode().split(',')))[0]
