@@ -18,7 +18,7 @@ class caen_n1470(SerialSensor):
         '<anode|cathode> vset <value>',
     ]
 
-    def SetParameters(self):
+    def set_parameters(self):
         self._msg_start = '$'
         self._msg_end = '\r\n'
         self.commands = {'read' : f'BD:{self.board},' + 'CMD:MON,CH:{ch},PAR:{par}',
@@ -44,7 +44,7 @@ class caen_n1470(SerialSensor):
                         par='VSET', val=x.group('val'))),
                 ]
 
-    def isThisMe(self, dev):
+    def is_this_me(self, dev):
         val = self.SendRecv(self.commands['name'], dev)
         if not val['data'] or val['retcode']:
             return False

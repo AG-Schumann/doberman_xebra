@@ -11,7 +11,7 @@ class Teledyne(SerialSensor):
             'setpoint <value>: change setpoint',
             'valve <auto|open|close>: change valve status',
         ]
-    def SetParameters(self):
+    def set_parameters(self):
         self._msg_end = '\r\n'
         self.commands = {
                 'Address' : 'add',
@@ -42,7 +42,7 @@ class Teledyne(SerialSensor):
                         params=self.setpoint_map[x.group('params')])),
                 ]
 
-    def isThisMe(self, dev):
+    def is_this_me(self, dev):
         command = self.getcommand.format(cmd=self.commands['Address'])
         resp = self.SendRecv(command, dev)
         if resp['retcode'] or not resp['data']:

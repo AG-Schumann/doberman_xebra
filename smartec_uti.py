@@ -9,7 +9,7 @@ class smartec_uti(SerialSensor):
     Level meter sensors
     """
 
-    def SetParameters(self):
+    def set_parameters(self):
         self.commands = {
                 'greet' : '@',
                 'help' : '?',
@@ -29,7 +29,7 @@ class smartec_uti(SerialSensor):
         self.SendRecv(self.commands['setSlow'])
         self.SendRecv(self.commands['setMode%s' % int(self.mode)])
 
-    def isThisMe(self, dev):
+    def is_this_me(self, dev):
         """
         The smartec serial protocol is very poorly designed, so we have to use
         dmesg to see if we found the right sensor
@@ -66,7 +66,7 @@ class smartec_uti(SerialSensor):
             return True
         return False
 
-    def ProcessOneReading(self, name, data):
+    def process_one_reading(self, name, data):
         """
         """
         values = data.decode().rstrip().split()
