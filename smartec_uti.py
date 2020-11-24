@@ -24,10 +24,10 @@ class smartec_uti(SerialSensor):
         self._msg_start = ''
         self._msg_end = '\r\n'
 
-    def Setup(self):
-        self.SendRecv(self.commands['greet'])
-        self.SendRecv(self.commands['setSlow'])
-        self.SendRecv(self.commands['setMode%s' % int(self.mode)])
+    def setup(self):
+        self.send_recv(self.commands['greet'])
+        self.send_recv(self.commands['setSlow'])
+        self.send_recv(self.commands['setMode%s' % int(self.mode)])
 
     def is_this_me(self, dev):
         """
