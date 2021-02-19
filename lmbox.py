@@ -11,9 +11,11 @@ class lmbox(SerialSensor):
         self._msg_end = '\r\n'
 
     def process_one_reading(self, name, data):
+
         if len(data) != 55:
-            self.logger.debug(f'length of data is not 55. Will ignore this reading')
-            return
+            data = self.sanify_input(data)
+        if len(data) != 55:
+            return None
         decoded = struct.unpack('<'+6*(4*'h'+'c')+'c', data)
         c_meas = []
         for i in range(5):
@@ -27,4 +29,17 @@ class lmbox(SerialSensor):
             c_meas.append(self.c_ref[i]*(n_x-n_off)/(n_ref-n_off))
         return c_meas
 
-
+    def sanify_input(self, data):
+        """
+        Sometimes the lmbox returns more bytes than expected. The data is still intact, though,
+        and can be decoded.
+        """
+        self.logger.debug(f'sanify input: {data}')
+        place_holder=b'\x02\x00\x02\x00\x05\x00\x03\x00'
+        data_tmp = data.split(b'\x06')
+        self.logger.debug(f'data_temp: {data_tmp}')
+        data_list = [p if len(p)==8 or p==b'\r' else place_holder for p in data_tmp]
+        self.logger.debug(f'data_list: {data_list}')
+        data=b'\x06'.join(data_list)
+        self.logger.debug(f'decoded: {data}, length: {len(data)}')
+        return data
