@@ -4,6 +4,7 @@ import re  # EVERYBODY STAND BACK xkcd.com/208
 
 class Teledyne(SerialSensor):
     """
+    NOT ADJUSTED FOR DOBERMAN 6 since the device isn't working anymore
     Teledyne flow controller
     THCD-100
     """

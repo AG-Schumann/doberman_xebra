@@ -1,8 +1,8 @@
-import Doberman
+from Doberman import LANDevice, utils
 import re
 
 
-class caen_sy5527(Doberman.LANSensor):
+class caen_sy5527(LANDevice):
     """
     Driver for the CAEN high-voltage crate
     """
@@ -21,12 +21,11 @@ class caen_sy5527(Doberman.LANSensor):
                 'calibration_error',
                 'unplugged',
                 ]
-        self.command_patterns = [(re.compile('set ch(?P<ch>[1-9]?[0-9]) sl3 (?P<task>rup|rdn|tripi|tript|setp|vset|pon|pdn|pw) (?P<value>%s)' % Doberman.utils.number_regex),
+        self.command_patterns = [(re.compile('set ch(?P<ch>[1-9]?[0-9]) sl3 (?P<task>rup|rdn|tripi|tript|setp|vset|pon|pdn|pw) (?P<value>%s)' % utils.number_regex),
             lambda m : m.group(0))]
 
-        self.reading_pattern = re.compile(('OK;(?P<value>(?:%s,)*%s)\r\n' % 
-            (Doberman.utils.number_regex, Doberman.utils.number_regex)).encode())
+        self.value_pattern = re.compile(f'OK;(?P<value>(?:{utils.number_regex},)*{utils.number_regex})\r\n'.encode())
 
     def process_one_reading(self, name, data):
-        m = self.reading_pattern.search(data)
+        m = self.value_pattern.search(data)
         return list(map(float, m.group('value').decode().split(',')))[0]

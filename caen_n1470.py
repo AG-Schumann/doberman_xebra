@@ -1,9 +1,9 @@
-from Doberman import SerialSensor, utils
+from Doberman import SerialDevice, utils
 import re  # EVERYBODY STAND BACK xkcd.com/208
 from itertools import product
 
 
-class caen_n1470(SerialSensor):
+class caen_n1470(SerialDevice):
     """
     Connects to the CAEN N1470. Command syntax:
     '$BD:<board number>,CMD:<MON,SET>,CH<channel>,PAR:<parameter>[,VAL:<%.2f>]\\r\\n'
@@ -14,48 +14,21 @@ class caen_n1470(SerialSensor):
     '#BD:<board number>,CMD:OK[,VAL:<value>[,<value>...]]'
     """
     accepted_commands = [
-        '<anode|cathode> <on|off>',
-        '<anode|cathode> vset <value>',
+        '<anode|cathode|screen> <on|off>',
+        '<anode|cathode|screen> <value>',
     ]
 
     def set_parameters(self):
         self._msg_start = '$'
         self._msg_end = '\r\n'
-        self.commands = {'read' : f'BD:{self.board},' + 'CMD:MON,CH:{ch},PAR:{par}',
-                        'name' : f'BD:{self.board},CMD:MON,PAR:BDNAME',
-                        'snum' : f'BD:{self.board},CMD:MON,PAR:BDSNUM'}
-        self.setcommand = f'BD:{self.board},CMD:SET,' + 'CH:{ch},PAR:{par},VAL:{val}'
-        self.powercommand = f'BD:{self.board},CMD:SET,' + 'CH:{ch},PAR:{par}'
-        self.error_pattern = re.compile(r',[A-Z]{2,3}:ERR'.encode())
-        self.reading_commands = {}
-        cmds = [('VMON','voltage'), ('VSET','setpt'), ('IMON','i'), ('STAT','status')]
-        for (cmd, cmd_n),(ch,ch_i) in product(cmds, self.channel_map.items()):
-            key = '%s_%s' % (ch, cmd_n)
-            self.reading_commands[key] = self.commands['read'].format(ch=ch_i,par=cmd)
-        self.reading_pattern = re.compile(('OK,VAL:(?P<value>%s)' % 
-                                            utils.number_regex).encode())
-        self.command_patterns = [
-                (re.compile('(?P<ch>anode|cathode|screen) (?P<par>on|off)'),
-                    lambda x : self.powercommand.format(
-                        ch=self.channel_map[x.group('ch')],par=x.group('par').upper())),
-                (re.compile(('(?P<ch>anode|cathode|screen) vset (?P<val>%s)' %
-                                            utils.number_regex)),
-                    lambda x : self.setcommand.format(ch=self.channel_map[x.group('ch')],
-                        par='VSET', val=x.group('val'))),
-                ]
+        self.setcommand = f'BD:{self.params["board"]},CMD:SET,' + 'CH:{ch},PAR:{par},VAL:{val}'
+        self.powercommand = f'BD:{self.params["board"]},CMD:SET,' + 'CH:{ch},PAR:{par}'
+        self.value_pattern = re.compile(f'OK,VAL:(?P<value>{utils.number_regex})'.encode())
 
-    def is_this_me(self, dev):
-        val = self.SendRecv(self.commands['name'], dev)
-        if not val['data'] or val['retcode']:
-            return False
-        if b'N1470' not in val['data']:
-            return False
-        val = self.SendRecv(self.commands['snum'], dev)
-        if not val['data'] or val['retcode']:
-            return False
-        sn = val['data'].decode().rstrip().split('VAL:')[1]
-        if sn != self.serialID:
-            return False
-        else:
-            return True
+    def execute_commands(self, quantity, value):
+        if quantity in self.params.channel_map:
+            if value in ['on', 'off']:
+                return self.powercommand.format(ch=self.params.channel_map[quantity], par=value.upper())
+            else:
+                return self.setcommand.format(ch=self.params.channel_map[quantity], par='VSET', val=value)
 

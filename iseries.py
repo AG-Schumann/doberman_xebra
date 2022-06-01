@@ -1,8 +1,8 @@
-from Doberman import SerialSensor, utils
+from Doberman import SerialDevice, utils
 import re  # EVERYBODY STAND BACK xkcd.com/208
 
 
-class iseries(SerialSensor):
+class iseries(SerialDevice):
     """
     iseries sensor
     """
@@ -18,22 +18,4 @@ class iseries(SerialSensor):
                 'getDisplayedValue' : 'X01',
                 'getCommunicationParameters' : 'R10',
                 }
-        self.reading_pattern = re.compile(('%s(?P<value>%s)' %
-                                            (self.commands['getDisplayedValue'],
-                                            utils.number_regex)).encode())
-        self.id_pattern = re.compile(('%s%s' % (self.commands['getAddress'],
-                                                self.serialID)).encode())
-
-    def is_this_me(self, dev):
-        info = self.SendRecv(self.commands['getAddress'], dev)
-        try:
-            if info['retcode']:
-                self.logger.warning('Not answering correctly...')
-                return False
-            if not info['data']:
-                return False
-            if self.id_pattern.search(info['data']):
-                return True
-        except:
-            return False
-
+        self.value_pattern = re.compile(f'{self.commands["getDisplayedValue"]}(?P<value>{utils.number_regex})'.encode())

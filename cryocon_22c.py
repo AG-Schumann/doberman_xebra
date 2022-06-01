@@ -1,14 +1,13 @@
-from Doberman import LANSensor, utils
+from Doberman import LANDevice, utils
 import re  # EVERYBODY STAND BACK xkcd.com/208
 
 
-class cryocon_22c(LANSensor):
+class cryocon_22c(LANDevice):
     """
     Cryogenic controller
     """
     accepted_commands = [
-        'setpoint <channel> <value>: change the setpoint for the given channel',
-        'loop stop: shut down both heaters'
+        'set setpoint <value>: change the setpoint',
     ]
 
     def set_parameters(self):
@@ -25,15 +24,9 @@ class cryocon_22c(LANSensor):
             'settempBUnits': 'input b:units k',
             'setSP': 'loop {ch}:setpt {value}',
         }
-        self.reading_pattern = re.compile(('(?P<value>%s)' % utils.number_regex).encode())
+        self.value_pattern = re.compile(('(?P<value>%s)' % utils.number_regex).encode())
         self.command_patterns = [
             (re.compile(r'setpoint (?P<ch>1|2) (?P<value>%s)' % utils.number_regex),
              lambda x: self.commands['setSP'].format(**x.groupdict())),
-            (re.compile('(shitshitfirezemissiles)|(loop stop)'),
-             self.fire_missiles),
-        ]
 
-    def fire_missiles(self, m):  # worth it for an entire function? Totally
-        if 'missiles' in m.group(0):
-            self.logger.warning('But I am leh tired...')
-        return 'stop'
+        ]
