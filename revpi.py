@@ -94,7 +94,7 @@ class revpi(Device):
         """
         Reading from the custom muxers is a two-step operation
         """
-        muxer_lines = self.muxer_ctl[int(muxer)]
+        muxer_lines = self.muxer_ctl[muxer]
         mask = format(ch, f'0{len(muxer_lines)-1}b')[::-1]
         for do, value in zip(muxer_lines[:-1], mask):
             self.write(do, int(value))
@@ -108,7 +108,7 @@ class revpi(Device):
             muxer_rtds = [lines[-1] for lines in self.muxer_ctl]
             if msg[1] in muxer_rtds:
                 if len(msg) == 3:
-                    ret['data'] = self.read_muxer(muxer_rtds.index(msg[1]), int(msg[2]))
+                    ret['data'] = self.read_muxer(msg[1], int(msg[2]))
                 else:
                     self.logger.debug(f'Reading out Multiplexer ({msg[1]}) without specified channel. Defaulting to '
                                       f'channel 0.')
@@ -128,4 +128,6 @@ class revpi(Device):
         """
         Do nothing. Leaves conversion to sensible units to later.
         """
-        return 
+        data = float(data)
+        # skip faulty temperature measurements
+        return None if name[0] == 'T' and data > 63000 else data
