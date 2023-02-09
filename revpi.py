@@ -19,7 +19,7 @@ class revpi(Device):
         # which lines are the muxers connected to? The last in each list is the RTD line,
         # the others are the digital controls, all with the format '<channel_name>'
         self.muxer_ctl = [
-        
+            ['', '', ''],
             ['', '', ''],
             ['', '', '']
         ]
@@ -28,7 +28,7 @@ class revpi(Device):
         self.f.close()
 
     def setup(self):
-        self.f = open('/dev/piControl0', 'wb+', 0)
+        self.f = open('/dev/piControl0', 'wb+')
 
     def get_position(self, name):
         prm = (b'K'[0] << 8) + 17
@@ -126,7 +126,8 @@ class revpi(Device):
 
     def process_one_value(self, name, data):
         """
-        Do nothing. Leaves conversion to sensible units to later.
+        Drops faulty temperature measurements, otherwise leaves the conversion from DAC units to something sensible
+        to a later function
         """
         data = float(data)
         # skip faulty temperature measurements
