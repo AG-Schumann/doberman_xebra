@@ -45,7 +45,7 @@ class revpi(Device):
         if name not in self.positions:
             self.positions[name] = self.get_position(name)
         offset = struct.unpack_from('>H', self.positions[name], 32)[0]
-        length = struct.unpack_from('>H', self.positions[name], 35)[0]
+        length = struct.unpack_from('B', self.positions[name], 36)[0]
         prm = (b'K'[0] << 8) + 16
         byte_array = bytearray([0, 0, 0, 0])
         if length == 1:  # single bit
@@ -70,7 +70,7 @@ class revpi(Device):
             self.positions[name] = self.get_position(name)
         value = bytearray([0, 0, 0, 0])
         offset = struct.unpack_from('>H', self.positions[name], 32)[0]
-        length = struct.unpack_from('>H', self.positions[name], 35)[0]
+        length = struct.unpack_from('B', self.positions[name], 36)[0]
         prm = (b'K'[0] << 8) + 15
         if length == 1:  # single bit
             bit = struct.unpack_from('B', self.positions[name], 34)[0]
