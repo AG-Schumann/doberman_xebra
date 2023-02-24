@@ -10,3 +10,5 @@ class pfeiffer_tpg(LANDevice):
         }
     value_pattern = re.compile(('(?P<status>[0-9]),(?P<value>%s)' %
                                               utils.number_regex).encode())
+    def setup(self):
+        self.send_recv(self.commands['identify'])
