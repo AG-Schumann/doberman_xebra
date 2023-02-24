@@ -3,13 +3,10 @@ import re  # EVERYBODY STAND BACK xkcd.com/208
 
 
 class pfeiffer_tpg(LANDevice):
-    def set_parameters(self):
-        self._msg_end = '\r\n\x05'
-        self.commands = {
-                'identify' : 'AYT',
-                }
-        self.value_pattern = re.compile(('(?P<status>[0-9]),(?P<value>%s)' % utils.number_regex).encode())
-
-    def setup(self):
-        self.send_recv(self.commands['identify'])
-        # stops the continuous flow of data
+    eol = b'\n'
+    _msg_end = '\r\n\x05'
+    commands = {
+        'identify' : 'AYT',
+        }
+    value_pattern = re.compile(('(?P<status>[0-9]),(?P<value>%s)' %
+                                              utils.number_regex).encode())
