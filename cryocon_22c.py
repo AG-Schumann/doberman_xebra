@@ -10,8 +10,8 @@ class cryocon_22c(LANDevice):
         'set setpoint <value>: change the setpoint',
     ]
 
-     _msg_end = ';\n'
-     commands = {  # these are not case sensitive
+    _msg_end = ';\n'
+    commands = {  # these are not case sensitive
         'identify': '*idn?',
         'getTempA': 'input? a:units k',
         'getTempB': 'input? b:units k',
@@ -22,9 +22,9 @@ class cryocon_22c(LANDevice):
         'setTempAUnits': 'input a:units k',
         'settempBUnits': 'input b:units k',
         'setSP': 'loop {ch}:setpt {value}',
-      }
-      value_pattern = re.compile(('(?P<value>%s)' % utils.number_regex).encode())
-      command_patterns = [
+    }
+    value_pattern = re.compile(('(?P<value>%s)' % utils.number_regex).encode())
+    command_patterns = [
         (re.compile(r'setpoint (?P<ch>1|2) (?P<value>%s)' % utils.number_regex),
         lambda x: self.commands['setSP'].format(**x.groupdict())),
-      ]
+    ]
