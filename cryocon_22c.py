@@ -10,6 +10,7 @@ class cryocon_22c(LANDevice):
         'set setpoint <value>: change the setpoint',
     ]
 
+    eol = b'\n'
     _msg_end = ';\n'
     commands = {  # these are not case sensitive
         'identify': '*idn?',
