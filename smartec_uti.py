@@ -25,6 +25,7 @@ class smartec_uti(SerialDevice):
         self._msg_end = '\r\n'
 
     def setup(self):
+        super().setup()
         self.send_recv(self.commands['greet'])
         self.send_recv(self.commands['setSlow'])
         self.send_recv(self.commands[f'setMode{int(self.params["mode"])}'])
