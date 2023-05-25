@@ -25,7 +25,7 @@ class caen_n1470(SerialDevice):
         self.powercommand = f'BD:{self.params["board"]},CMD:SET,' + 'CH:{ch},PAR:{par}'
         self.value_pattern = re.compile(f'OK,VAL:(?P<value>{utils.number_regex})'.encode())
 
-    def execute_commands(self, quantity, value):
+    def execute_command(self, quantity, value):
         if quantity in self.params.channel_map:
             if value in ['on', 'off']:
                 return self.powercommand.format(ch=self.params.channel_map[quantity], par=value.upper())
