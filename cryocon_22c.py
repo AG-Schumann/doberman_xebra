@@ -25,7 +25,7 @@ class cryocon_22c(LANDevice):
         'setSP': 'loop {ch}:setpt {value}',
     }
     value_pattern = re.compile(('(?P<value>%s)' % utils.number_regex).encode())
-    command_patterns = [
-        (re.compile(r'setpoint (?P<ch>1|2) (?P<value>%s)' % utils.number_regex),
-        lambda x: self.commands['setSP'].format(**x.groupdict())),
-    ]
+    
+    def execute_command(self, quantity, value):
+        if quantity == 'setpoint':
+            return self.commands['setSP'].format(ch=1, value=value)
