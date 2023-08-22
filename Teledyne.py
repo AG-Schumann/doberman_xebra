@@ -24,7 +24,7 @@ class Teledyne(LANDevice):
         self.setcommand = self.basecommand + ' {params}'
         self.getcommand = self.basecommand + '?'
 
-        self.value_pattern = re.compile(('READ: *(?P<value>%s)' %
+        self.value_pattern = re.compile(('(?P<value>%s)' %
                                             utils.number_regex).encode())
         self.get_addr = re.compile(b'ADDR: *(?P<addr>[a-z])')
         self.command_echo = f'\\*{self.params["device_address"]}\\*:' + '{cmd} *;'
