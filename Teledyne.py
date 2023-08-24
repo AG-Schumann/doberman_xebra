@@ -8,8 +8,8 @@ class Teledyne(LANDevice):
     THCD-100
     """
     accepted_commands = [
-            'setpoint <value>: change setpoint',
-            'valve <auto|open|close>: change valve status',
+            'set setpoint <value>: change setpoint',
+            'set valvemode <auto|open|close>: change valve status',
         ]
     def set_parameters(self):
         self._msg_end = '\r\n'
@@ -33,4 +33,12 @@ class Teledyne(LANDevice):
         self.setpoint_map = {'auto' : 0, 'open' : 1, 'close' : 2}
         self.reading_commands = {'flow' : self.basecommand.format(
                                     cmd=self.commands['read'])}
+
+
+    def execute_command(self, quantity, value):
+        if quantity == 'setpoint':
+            return self.setcommand.format(cmd=self.commands['SetpointValue'], params=value)
+        elif quantity == 'valvemode':
+            value = int(value)
+            return self.setcommand.format(cmd=self.commands['SetpointMode'], params=value)
 
