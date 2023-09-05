@@ -34,6 +34,13 @@ class Teledyne(LANDevice):
         self.reading_commands = {'flow' : self.basecommand.format(
                                     cmd=self.commands['read'])}
 
+    def execute_command(self, quantity, value):
+        if quantity == 'setpoint':
+            return self.setcommand.format(cmd=self.commands['SetpointValue'], params=value)
+        elif quantity == 'valvemode':
+            value = int(value)
+            return self.setcommand.format(cmd=self.commands['SetpointMode'], params=value)
+
     def do_one_measurement(self):
         """
         Asks the device for data, unpacks it, and sends it to the database
