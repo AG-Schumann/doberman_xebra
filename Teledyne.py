@@ -12,6 +12,13 @@ class Teledyne(LANDevice):
             'set valvemode <auto|open|close>: change valve status',
         ]
 
+    def execute_command(self, quantity, value):
+        if quantity == 'setpoint':
+            return self.setcommand.format(cmd=self.commands['SetpointValue'], params=value)
+        elif quantity == 'valvemode':
+            value = int(value)
+            return self.setcommand.format(cmd=self.commands['SetpointMode'], params=value)
+
     def do_one_measurement(self):
         """
         Asks the device for data, unpacks it, and sends it to the database
