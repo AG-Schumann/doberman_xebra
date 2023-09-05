@@ -34,3 +34,30 @@ class Teledyne(LANDevice):
         self.reading_commands = {'flow' : self.basecommand.format(
                                     cmd=self.commands['read'])}
 
+    def do_one_measurement(self):
+        """
+        Asks the device for data, unpacks it, and sends it to the database
+        """
+        pkg = {}
+        self.schedule(self.readout_command, ret=(pkg, self.cv))
+        with self.cv:
+            if self.cv.wait_for(lambda: (len(pkg) > 0 or self.event.is_set()), self.readout_interval):
+                failed = False
+            else:
+                # timeout expired
+                failed = len(pkg) == 0
+        if len(pkg) == 0 or failed:
+            self.logger.debug(f'Didn\'t get anything from the device!')
+            return
+        try:
+            value = self.device_process(name=self.name, data=pkg['data'])
+        except (ValueError, TypeError, ZeroDivisionError, UnicodeDecodeError, AttributeError) as e:
+            self.logger.debug(f'Got a {type(e)} while processing \'{pkg["data"]}\': {e}')
+            value = None
+        if value is not None:
+            value = self.more_processing(value)
+            self.send_downstream(value, pkg['time'])
+        else:
+            self.logger.debug(f'Got None')
+        return
+
